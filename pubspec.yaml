@@ -1,0 +1,47 @@
+name: dilprotek
+description: AI Heart Defense System
+version: 1.0.0+1
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  
+  # Networking
+  http: ^1.1.0
+  
+  # Data
+  csv: ^6.0.0
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1 # ✅ Required for Voice Screen
+
+  # AI & Hardware
+  google_mlkit_image_labeling: ^0.11.0 
+  camera: ^0.10.5
+  record: ^5.2.0
+  permission_handler: ^11.0.0
+  
+  # UI
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.2.0
+  model_viewer_plus: ^1.7.0
+  cupertino_icons: ^1.0.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/daily_food_nutrition_dataset.csv
+    - assets/lowpoly_human_heart.glb
+
+# Add this to the very bottom of pubspec.yaml
+dependency_overrides:
+  record_platform_interface: ^1.1.0
+  record_linux: ^1.0.0    
+dev_dependencies:
+  flutter_lints: ^6.0.0

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "871911537267",
+    "project_id": "dilprotek-abhinav",
+    "storage_bucket": "dilprotek-abhinav.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871911537267:android:1e52182dd3f9c4a4fc8806",
+        "android_client_info": {
+          "package_name": "com.example.dilprotek"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp4bf74cBaZQRhCCy7_Mpss8YuF_ndOnc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
