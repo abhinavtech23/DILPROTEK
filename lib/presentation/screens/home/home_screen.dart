@@ -1,5 +1,8 @@
+import 'package:dilprotek/report/report_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 // ⚠️ THESE IMPORTS MUST MATCH YOUR ACTUAL FILE NAMES
 // If any line below is red, it means that specific file is missing or named differently.
@@ -9,6 +12,7 @@ import '../voice/voice_stress_screen.dart';
 import '../doctor/doctor_connect_screen.dart';
 import '../chatbot/ai_chat_screen.dart';
 import '../auth/login_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -56,6 +60,7 @@ class HomeScreen extends StatelessWidget {
                 _btn(context, "Food Scanner", Icons.camera_alt, Colors.orange, const FoodScreen()),
                 _btn(context, "Doctor Link", Icons.security, Colors.blue, const DoctorConnectScreen()),
                 _btn(context, "AI Chat", Icons.chat, Colors.green, const AiChatScreen()),
+                _btn(context, "Report AI", Icons.analytics, Colors.blue, const ReportScreen()),
               ],
             )
           ],
