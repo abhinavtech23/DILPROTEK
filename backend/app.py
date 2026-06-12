@@ -1,17 +1,24 @@
+import warnings
+import os
 import joblib
 import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os
+
+# Suppress sklearn version mismatch warning (model trained with older version)
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 
 app = Flask(__name__)
 CORS(app) 
+# Load models relative to this file's directory (works from any CWD)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 try:
-    model = joblib.load('heart_model.pkl')
-    scaler = joblib.load('scaler.pkl')
-    print("✅ AI Models Loaded Successfully")
+    model = joblib.load(os.path.join(BASE_DIR, 'heart_model.pkl'))
+    scaler = joblib.load(os.path.join(BASE_DIR, 'scaler.pkl'))
+    print("[OK] AI Models Loaded Successfully")
 except Exception as e:
-    print(f"❌ Error Loading Models: {e}")
+    print(f"[ERROR] Error Loading Models: {e}")
     model = None
     scaler = None
 
@@ -63,4 +70,4 @@ def predict():
         return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -2,144 +2,99 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import '../../data/services/api_service.dart';
+import '../presentation/widgets/ai_doctor_sheet.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
-
   @override
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
 class _ReportScreenState extends State<ReportScreen> {
   File? _image;
-  String _extractedText = "";
-  String _aiAdvice = "";
-  bool _isAnalyzing = false;
+  bool _isScanning = false;
 
-  final ImagePicker _picker = ImagePicker();
-
-  // 1. Pick Image
-  Future<void> _pickImage() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
+  void _pickAndScan() async {
+    final picker = ImagePicker();
+    final photo = await picker.pickImage(source: ImageSource.gallery);
+    
     if (photo != null) {
-      setState(() {
-        _image = File(photo.path);
-        _extractedText = "";
-        _aiAdvice = "";
-      });
-      _processImage(photo.path);
-    }
-  }
-
-  // 2. Read Text (OCR)
-  Future<void> _processImage(String path) async {
-    setState(() => _isAnalyzing = true);
-    try {
-      final inputImage = InputImage.fromFilePath(path);
+      setState(() { _image = File(photo.path); _isScanning = true; });
+      
+      // Perform OCR
+      final inputImage = InputImage.fromFilePath(photo.path);
       final textRecognizer = TextRecognizer();
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      final recognizedText = await textRecognizer.processImage(inputImage);
+      
+      setState(() => _isScanning = false);
 
-      setState(() {
-        _extractedText = recognizedText.text;
-      });
+      if (!mounted) return;
 
-      // 3. Ask AI for Advice
-      if (_extractedText.isNotEmpty) {
-        _getAIAdvice(_extractedText);
-      } else {
-        setState(() => _isAnalyzing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Could not read any text. Try a clearer photo.")),
+      if (recognizedText.text.length < 10) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No text found. Try again.")));
+        }
+        return;
+      }
+
+      // 🚀 Launch AI Doctor Immediately
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => AiDoctorSheet(
+            contextData: recognizedText.text,
+            initialPrompt: "Analyze this medical report. Explain the values, flag abnormal results, and suggest next steps.",
+          )
         );
       }
-    } catch (e) {
-      setState(() => _isAnalyzing = false);
-      print("Error scanning: $e");
     }
-  }
-
-  // 4. Get AI Response
-  Future<void> _getAIAdvice(String reportText) async {
-    String prompt = "Analyze this medical report text and give a summary, key warnings, and advice: \n\n$reportText";
-    
-    // Uses your existing ApiService!
-    String response = await ApiService.getChatResponse(prompt);
-    
-    setState(() {
-      _aiAdvice = response;
-      _isAnalyzing = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Medical Report AI"), backgroundColor: Colors.teal, foregroundColor: Colors.white),
-      body: SingleChildScrollView(
+      appBar: AppBar(title: const Text("Lab Report Decoder")),
+      body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Image Preview Area
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _image == null
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.upload_file, size: 50, color: Colors.grey),
-                          Text("Tap 'Upload' to scan a report"),
-                        ],
-                      ),
+            // Preview Card
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                ),
+                child: _image == null 
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.document_scanner_rounded, size: 80, color: Colors.teal.shade200),
+                        const SizedBox(height: 20),
+                        const Text("Upload a Blood Report\nor Prescription", style: TextStyle(color: Colors.grey))
+                      ],
                     )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(_image!, fit: BoxFit.cover),
-                    ),
+                  : ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.file(_image!, fit: BoxFit.contain)),
+              ),
+            ),
+            const SizedBox(height: 30),
+            
+            // Scan Button
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: ElevatedButton.icon(
+                onPressed: _isScanning ? null : _pickAndScan,
+                icon: _isScanning ? const SizedBox.shrink() : const Icon(Icons.upload_file),
+                label: _isScanning 
+                  ? const CircularProgressIndicator(color: Colors.white) 
+                  : const Text("UPLOAD & ANALYZE", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
             ),
             const SizedBox(height: 20),
-            
-            // Upload Button
-            ElevatedButton.icon(
-              onPressed: _isAnalyzing ? null : _pickImage,
-              icon: const Icon(Icons.camera_alt),
-              label: const Text("Upload Report"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Results Section
-            if (_isAnalyzing)
-              const Center(child: CircularProgressIndicator())
-            else if (_aiAdvice.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("🤖 AI Analysis:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
-                    const Divider(),
-                    Text(_aiAdvice, style: const TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
           ],
         ),
       ),

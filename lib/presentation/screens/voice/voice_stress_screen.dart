@@ -79,7 +79,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   value: _stressScore / 100, 
                   strokeWidth: 10, 
                   color: Colors.red, 
-                  backgroundColor: Colors.green.withOpacity(0.3)
+                  backgroundColor: Colors.green.withValues(alpha: 0.3)
                 ),
                 Text("${_stressScore.toInt()}", style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
               ],

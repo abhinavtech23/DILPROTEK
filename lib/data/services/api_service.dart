@@ -1,16 +1,19 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
   
-  static const String _pythonBackendUrl = "http://127.0.0.1:5000/predict";
+  // Use your PC's LAN IP so the physical device can reach the backend
+  // (127.0.0.1 only works on the PC itself, not from your phone)
+  static const String _pythonBackendUrl = "http://192.168.29.37:5000/predict";
   static const String _deepSeekUrl = "https://openrouter.ai/api/v1/chat/completions";
   static const String _deepSeekKey = "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";
 
   static Future<double> predictHeartRisk(Map<String, double> data) async {
     try {
-      print("🔌 Connecting to: $_pythonBackendUrl");
-      print("📦 Sending Data: $data");
+      debugPrint("Connecting to: $_pythonBackendUrl");
+      debugPrint("Sending Data: $data");
 
       final response = await http.post(
         Uri.parse(_pythonBackendUrl),
@@ -18,8 +21,8 @@ class ApiService {
         body: jsonEncode(data),
       ).timeout(const Duration(seconds: 5)); 
 
-      print("✅ Response Code: ${response.statusCode}");
-      print("📩 Response Body: ${response.body}");
+      debugPrint("Response Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
@@ -28,7 +31,7 @@ class ApiService {
         throw Exception("Server Error: ${response.statusCode}");
       }
     } catch (e) {
-      print("⚠️ Connection Failed. Using Fallback. Error: $e");
+      debugPrint("Connection Failed. Using Fallback. Error: $e");
       return _fallbackCalculation(data);
     }
   }

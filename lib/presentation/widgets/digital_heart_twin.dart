@@ -11,8 +11,8 @@ class DigitalHeartTwin extends StatelessWidget {
     // 🧠 Visualization Logic:
     // If risk is High (>50%), make background red-tinted.
     Color bgColor = riskScore > 50 
-        ? Colors.red.withOpacity(0.1) 
-        : Colors.blue.withOpacity(0.1);
+        ? Colors.red.withValues(alpha: 0.1) 
+        : Colors.blue.withValues(alpha: 0.1);
 
     return Container(
       height: 350,
@@ -21,7 +21,7 @@ class DigitalHeartTwin extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: riskScore > 50 ? Colors.red.withOpacity(0.3) : Colors.teal.withOpacity(0.3),
+          color: riskScore > 50 ? Colors.red.withValues(alpha: 0.3) : Colors.teal.withValues(alpha: 0.3),
           width: 2,
         ),
       ),

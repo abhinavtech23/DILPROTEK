@@ -67,7 +67,7 @@ class _FoodScreenState extends State<FoodScreen> {
       }
 
     } catch (e) {
-      print("Scan Error: $e");
+      debugPrint("Scan Error: $e");
     } finally {
       if (mounted) setState(() => _scanning = false);
     }

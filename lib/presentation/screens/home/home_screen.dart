@@ -78,7 +78,7 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFF6F61), // Coral color
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.red.withOpacity(0.3), blurRadius: 10)]
+          boxShadow: [BoxShadow(color: Colors.red.withValues(alpha: 0.3), blurRadius: 10)]
         ),
         child: const Row(
           children: [
@@ -106,7 +106,7 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5)]
+          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), blurRadius: 5)]
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
